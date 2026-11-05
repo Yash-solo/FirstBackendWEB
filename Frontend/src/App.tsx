@@ -1,36 +1,69 @@
-import {useEffect } from 'react';
+import { useEffect } from 'react';
 import './App.css'
 import { useState } from 'react';
+
+import ReviewCard from './componants/ReviewCard';
 function App() {
 
-  const [houseData,setHousedata] = useState([]);
-  interface HouseData{
-    id:number,
+  const [houseData, setHousedata] = useState([]);
+  const [reviewdata, setreviewData] = useState([]);
+  interface HouseData {
+    id: number,
     House: string,
     Rent: number,
   }
+  interface ReviewData {
+    id: number,
+    Name: string,
+    Stars: number,
+    House: string,
+    message: string
 
-  useEffect(()=>{
-    async function getData(){
+  }
+
+  useEffect(() => {
+    async function getReviewData() {
+      const response = await fetch(`/api/ReviewData`);
+      if (response.ok) {
+        const data = await response.json();
+        setreviewData(data);
+      } else {
+        console.log("Server is not responding!");
+      }
+    }
+    getReviewData();
+  })
+  const renderReviewCards = reviewdata.map((reviews: ReviewData) => {
+    return <ReviewCard key={reviews.id} revName={reviews.Name} House={reviews.House} stars={reviews.Stars} message={reviews.message} />
+  })
+  useEffect(() => {
+    async function getData() {
       const response = await fetch('/api/Udata');
-      if(response.ok){
+      if (response.ok) {
         const data = await response.json();
         setHousedata(data);
-      }else{
+      } else {
         console.log("Data is not there");
       }
     }
     getData();
 
-  },[])
-  const renderhouseId = houseData.map((houseData: HouseData)=>{
-    return <h2>{houseData.id}</h2>
+  }, [])
+  async function sendData() {
+    const response = await fetch('/api/ReviewData', {
+      method: 'POST',
+
+    });
+    console.log(response);
+  }
+  const renderhouseId = houseData.map((houseData: HouseData) => {
+    return <h2 key={houseData.id} >{houseData.id}</h2>
   })
-  const renderhouseprice = houseData.map((houseData: HouseData)=>{
-    return <h2>{houseData.Rent}</h2>
+  const renderhouseprice = houseData.map((houseData: HouseData) => {
+    return <h2 key={houseData.id}>{houseData.Rent}</h2>
   })
-  const renderhousetypeData = houseData.map((house: HouseData)=>{
-    return <h2>{house.House}</h2>
+  const renderhousetypeData = houseData.map((house: HouseData) => {
+    return <h2 key={house.id}>{house.House}</h2>
   })
   return (
     <>
@@ -69,6 +102,40 @@ function App() {
             {renderhouseprice}
           </div>
         </div>
+        <h1>Reviews</h1>
+      </section>
+      <section className='reviews'>
+
+        {renderReviewCards}
+      </section>
+      <section className='contactUs'>
+        <div className='contactusText'>
+          <h1>Contact Us</h1>
+          <h4>Fill this form and our team will reach out you by you Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam, deserunt eaque suscipit placeat minima, minus sit officiis excepturi itaque vel harum quidem nisi, rerum nulla odit quis nemo cupiditate possimus?</h4>
+        </div>
+        <form>
+          <div className='inputes'>
+            <label htmlFor="nameinput">
+              <span>First Name</span>
+              <input type="text" placeholder='Enter first Name' />
+            </label>
+            <label htmlFor="nameinput">
+              <span>Last Name</span>
+              <input type="text" placeholder='Email Last Name' />
+            </label>
+            <label htmlFor="No">
+              <span>Mobile Number</span>
+              <input type="text" placeholder='Enter Mobile Number' />
+            </label>
+            <label htmlFor="">
+              <span>Email</span>
+              <input type="text" placeholder='Enter Email address' />
+            </label>
+          </div>
+          <p>Your message</p>
+          <textarea name="message" id="message" placeholder='Enter your message'></textarea>
+          <button onClick={() => sendData()} type="button">Submit</button>
+        </form>
       </section>
     </>
   )
