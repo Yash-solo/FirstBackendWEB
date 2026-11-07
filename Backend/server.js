@@ -1,11 +1,19 @@
 const express =  require('express');
 const cors = require('cors');
 
-
 const app = express();
+app.use(express.json())
 app.use(cors({
     origin:'http://localhost:3000'
 }))
+
+app.post("/giveData",(req,res)=>{
+    console.log(req.body);
+    res.status(200).json({ 
+        success: true, 
+        message: "Your query has submitted successfully" 
+    });
+})
 
 const Reviews  = [
     {
@@ -48,9 +56,7 @@ const Reviews  = [
 app.get('/ReviewData',(req,res)=>{
     res.send(Reviews);
 })
-app.get('/ReviewData',(req,res)=>{
-    console.log(req);
-})
+
 
 const UserData = [
     {

@@ -1,12 +1,19 @@
 import { useEffect } from 'react';
 import './App.css'
 import { useState } from 'react';
-
 import ReviewCard from './componants/ReviewCard';
 function App() {
 
   const [houseData, setHousedata] = useState([]);
   const [reviewdata, setreviewData] = useState([]);
+  const [UserData, setUserData] = useState({
+    'firstName': "",
+    'lastName': "",
+    'email': "",
+    "mobileNo": 0,
+    "Message": "",
+  });
+
   interface HouseData {
     id: number,
     House: string,
@@ -50,12 +57,27 @@ function App() {
 
   }, [])
   async function sendData() {
-    const response = await fetch('/api/ReviewData', {
+    const response = await fetch('/api/giveData', {
       method: 'POST',
-
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(UserData)
     });
-    console.log(response);
+    if (response.ok) {
+      const data = await response.json();
+      alert(data.message);
+      setUserData({
+        'firstName': "",
+        'lastName': "",
+        'email': "",
+        "mobileNo": 0,
+        "Message": "",
+      })
+
+    } else {
+      console.log("Server is not responding!");
+    }
   }
+
   const renderhouseId = houseData.map((houseData: HouseData) => {
     return <h2 key={houseData.id} >{houseData.id}</h2>
   })
@@ -65,6 +87,12 @@ function App() {
   const renderhousetypeData = houseData.map((house: HouseData) => {
     return <h2 key={house.id}>{house.House}</h2>
   })
+
+  function handleChange(event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) {
+    const { name, value } = event.target;
+    setUserData((prev) => ({ ...prev, [name]: value }));
+  }
+
   return (
     <>
       <nav >
@@ -115,25 +143,25 @@ function App() {
         </div>
         <form>
           <div className='inputes'>
-            <label htmlFor="nameinput">
+            <label htmlFor="firstName">
               <span>First Name</span>
-              <input type="text" placeholder='Enter first Name' />
+              <input name="firstName" value={UserData.firstName} onChange={handleChange} type="text" placeholder='Enter first Name' />
             </label>
-            <label htmlFor="nameinput">
+            <label htmlFor="lastName">
               <span>Last Name</span>
-              <input type="text" placeholder='Email Last Name' />
+              <input name="lastName" value={UserData.lastName} onChange={handleChange} type="text" placeholder='Email Last Name' />
             </label>
-            <label htmlFor="No">
+            <label htmlFor="mobileNo">
               <span>Mobile Number</span>
-              <input type="text" placeholder='Enter Mobile Number' />
+              <input name="mobileNo" value={UserData.mobileNo} onChange={handleChange} type="text" placeholder='Enter Mobile Number' />
             </label>
-            <label htmlFor="">
+            <label htmlFor="email">
               <span>Email</span>
-              <input type="text" placeholder='Enter Email address' />
+              <input name="email" value={UserData.email} onChange={handleChange} type="text" placeholder='Enter Email address' />
             </label>
           </div>
           <p>Your message</p>
-          <textarea name="message" id="message" placeholder='Enter your message'></textarea>
+          <textarea name="Message" value={UserData.Message} onChange={handleChange} id="message" placeholder='Enter your message'></textarea>
           <button onClick={() => sendData()} type="button">Submit</button>
         </form>
       </section>

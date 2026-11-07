@@ -4,7 +4,7 @@
   "description": "",
   "license": "ISC",
   "author": "",
-  "type": "Commonjs",
+  "type": "commonjs",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
