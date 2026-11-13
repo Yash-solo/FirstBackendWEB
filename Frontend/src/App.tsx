@@ -27,7 +27,18 @@ function App() {
     message: string
 
   }
-
+  useEffect(() => {
+    async function getReviewData() {
+      const response = await fetch(`/api/getData`);
+      if (response.ok) {
+        const data = await response.json();
+        console.log("getData from the server :- ", data.message);
+      } else {
+        console.log("Server is not responding!");
+      }
+    }
+    getReviewData();
+  })
   useEffect(() => {
     async function getReviewData() {
       const response = await fetch(`/api/ReviewData`);

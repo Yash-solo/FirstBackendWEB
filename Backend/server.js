@@ -1,18 +1,35 @@
-const express =  require('express');
-const cors = require('cors');
+import express from 'express'
+import cors from 'cors'
+import {connectDB} from './src/DB/database.js'
+import {Client} from './src/model/User.model.js'
 
 const app = express();
 app.use(express.json())
-app.use(cors({
-    origin:'http://localhost:3000'
-}))
+app.use(cors());
+
+
 
 app.post("/giveData",(req,res)=>{
-    console.log(req.body);
-    res.status(200).json({ 
-        success: true, 
-        message: "Your query has submitted successfully" 
-    });
+    connectDB()
+    .then(async (response)=>{
+        console.log("Database connected successfully");
+        const newClient = new Client({
+            firstName: req.body.firstName,
+            lastName:req.body.lastName,
+            email: req.body.email,
+            mobileNo: req.body.mobileNo,
+            Message: req.body.Message
+        })
+        const savedClient = await newClient.save();
+        console.log("Client Saved As:- ",savedClient);
+        res.status(200).json({ 
+            success: true, 
+            message: "Your query has submitted successfully" 
+        });
+    }).catch((err)=>{
+        console.log("Error came:- ",err.message);
+    })
+    
 })
 
 const Reviews  = [
@@ -84,3 +101,31 @@ app.get('/Udata',(req,res)=>{
 app.listen(3000,(req,res)=>{
     console.log("Server is now LIVE");
 })
+
+
+// const recipeJSON = [
+//     {
+//         'id':1,
+//         "Name":"TomatoPyaaz",
+//         "Method":"This is a rendom recipe",
+//         "ingredients":["Tomato","Pyaaz"],
+//         "picture":"TomatoPyaaz.png",
+//         "category":"vegitarian"
+//     }
+// ]
+
+// app.post("/askRecipe",(req,res)=>{
+//     console.log(req.body);
+
+//     const responseItems = recipeJSON.filter((item)=>{
+//         return req.body.map((reqitem)=>{
+//             return item.ingredients.includes(reqitem);
+//         })
+//     })
+
+//     res.status(200).json({
+//         success: true,
+//         message: "Your Quary is submitted successfully",
+//         items:responseItems
+//     })
+// })
